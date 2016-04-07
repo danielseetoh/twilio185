@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Doctors</title>
+    <title>Sign Up</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
@@ -39,7 +39,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="/">Doctors</a>
+                <a class="navbar-brand" href="/">LifeLine</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -57,30 +57,35 @@
                 {% if session['username'] %}
                 <ul class = 'nav navbar-nav navbar-right'>
                     <li>
-                        <button type="button" class="btn btn-default" aria-label="Left Align">
-                            <a href = '/user/{{session['username']}}'><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Logged in as {{session['username']}}
-                            </a>
+                        <form action="/user/{{session['username']}}" method = 'GET'>
+                        <button type="submit" class="btn btn-sm btn-default" aria-label="Left Align">
+                            <!--<a href = '/user/{{session['username']}}'>-->
+                                <span class="glyphicon glyphicon-user" aria-hidden="true"></span>Logged in as {{session['username']}}
+                            <!--</a>-->
                         </button>
+                        </form>
                     </li>
                     <li>
                         <form class="form-inline" method = "POST" action = "/logout">
-                                <button id="btnLogout" class="btn btn-md btn-default" type="submit">Logout</button>
+                                <button id="btnLogout" class="btn btn-sm btn-default" type="submit">Logout</button>
                         </form>
                     </li>
                 </ul>
                 {% else %}
                 <ul class = 'nav navbar-inline navbar-right'>
                     <form class="form-inline" method = "POST" action = "/login">
-                        <div class="form-group">
+                        <div class="form-group input-group-sm">
                             <label for="username" class="sr-only">Name</label>
                             <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group input-group-sm">
                             <label for="password" class="sr-only">Password</label>
                             <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
                         </div>
-                        <button id="btnLogin" class="btn btn-md btn-default" type="submit">Login</button>
+                        <button id="btnLogin" class="btn btn-sm btn-default" type="submit">Login</button>
+                        <a class="btn btn-default btn-sm" href="signup">Sign Up</a>
                     </form>
+                    
                 </ul>
                 {% endif %}
             </div>
@@ -95,26 +100,70 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="tagline">Doctors</h1>
+                    <h1 class="tagline">LifeLine</h1>
                 </div>
             </div>
         </div>
     </header>
     <div class="container">
         <h2>Sign up</h2>
-        <p>If you are a medically certified professional, we need your help! Fill up the form below and do not leave any blanks.</p>
-        <div class="col-sm-6">
+        <p>If you are a medically certified professional, we need your help! Fill up the form below. You may input up to three addresses that you usually reside at and the time that you will be available at each address. This is how we will locate your presence at each area should there be emergencies nearby. Addresses beyond the first address is optional.</p>
+        <div class="col-sm-6 ">
             <form class="form-signin" method = "POST">
                 <label for="username" class="sr-only">Name</label>
                 <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
                 <label for="password" class="sr-only">Password</label>
                 <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-                <label for="phonenumber" class="sr-only">Email address</label>
+                <label for="phonenumber" class="sr-only">Email Address</label>
                 <input type="phonenumber" name="phonenumber" id="phonenumber" class="form-control" placeholder="Full Phone Number" required autofocus>
-                <!--To be changed to address-->
-                <label for="zipcode" class="sr-only">Password</label>
-                <input name="zipcode" id="zipcode" class="form-control" placeholder="Zipcode" required>
-                 
+                <br>
+                <label for="address1" class="sr-only">Full First Address</label>
+                <input name="address1" id="address1" class="form-control" placeholder="First Address" required>
+                <select class="form-control" name="starttime1" required>
+                    <option value="" disabled selected hidden>Available From:</option>
+                    {% for i in range(0,25) %}
+                    <option value="{{i}}">{{i}}:00 hrs</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control" name="endtime1" required>
+                    <option value="" disabled selected hidden>Available Till:</option>
+                    {% for i in range(0,25) %}
+                    <option value="{{i}}">{{i}}:00 hrs</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <!--optional second and third addresses-->
+                <!--need to add input validation for the second and third one for timing-->
+                <label for="address2" class="sr-only">Full Second Address</label>
+                <input name="address2" id="address2" class="form-control" placeholder="Second Address (optional)">
+                <select class="form-control" name="starttime2">
+                    <option value="" disabled selected hidden>Available From:</option>
+                    {% for i in range(0,25) %}
+                    <option value="{{i}}">{{i}}:00 hrs</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control" name="endtime2">
+                    <option value="" disabled selected hidden>Available Till:</option>
+                    {% for i in range(0,25) %}
+                    <option value="{{i}}">{{i}}:00 hrs</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <label for="address3" class="sr-only">Full Third Address</label>
+                <input name="address3" id="address3" class="form-control" placeholder="Third Address (optional)">     
+                <select class="form-control" name="starttime3">
+                    <option value="" disabled selected hidden>Available From:</option>
+                    {% for i in range(0,25) %}
+                    <option value="{{i}}">{{i}}:00 hrs</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control" name="endtime3">
+                    <option value="" disabled selected hidden>Available Till:</option>
+                    {% for i in range(0,25) %}
+                    <option value="{{i}}">{{i}}:00 hrs</option>
+                    {% endfor %}
+                </select>
+                <br>
                 <button id="btnSignUp" class="btn btn-md btn-primary btn-block" type="submit">Sign up</button>
             </form>    
             {% if error %}
@@ -131,7 +180,7 @@
         <footer>
             <div class="row">
                 <div class="col-lg-12">
-                    <p>Copyright &copy; Doctors</p>
+                    <p>Copyright &copy; LifeLine</p>
                 </div>
             </div>
             <!-- /.row -->

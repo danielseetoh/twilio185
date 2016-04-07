@@ -109,30 +109,39 @@
         <hr>
         <br>
         <div class="col-sm-6 ">
-            <p><b>Currently Active: </b>{{active}}</p>
-            {% for i in session['addresses'] %}
+        <form action = "/new/{{session['username']}}" method = "POST">
             <br>
-            <p><b>Address{{i+1}}: </b>{{session['addresses'][i][0]}}</p>
-            <p><b>Available from: </b>{{session['addresses'][i][1]}}.00 hrs</p>
-            <p><b>Available till: </b>{{session['addresses'][i][2]}}.00 hrs</p>
-            {% endfor %}
-            
-            <!--<form class="form-inline" method = "POST" action = "/edit/{{session['username']}}">-->
-            <!--    <div class = "form-group">-->
-            <!--        <button id="btnChangeActive" class="btn btn-md btn-default" type="submit">Edit</button>-->
-            <!--    </div>-->
-            <!--</form>-->
-            <br>
-            <a href="/edit/{{session['username']}}">
-                <button id="btnEdit" class="btn btn-md btn-default" type="button">Edit</button>
-            </a>
-            <a href="/new/{{session['username']}}">
-                <button id="btnNew" class="btn btn-md btn-default" type="button">Add Address</button>
-            </a>
+            <label for="address" class="sr-only">Full Address</label>
+            <input name="address" id="address" class="form-control" placeholder="Full Address" required>
+            <select class="form-control" name="starttime" required>
+                <option value="" disabled selected hidden>Available From:</option>
+                {% for i in range(0,25) %}
+                <option value="{{i}}">{{i}}:00 hrs</option>
+                {% endfor %}
+            </select>
+            <select class="form-control" name="endtime" required>
+                <option value="" disabled selected hidden>Available Till:</option>
+                {% for i in range(0,25) %}
+                <option value="{{i}}">{{i}}:00 hrs</option>
+                {% endfor %}
+            </select>
+         
         
+        <br>
+        <button id="submit" type="submit" class="btn btn-md btn-default">Add</button>
+        
+        <a href="/user/{{session['username']}}">
+            <button id="btnUser" class="btn btn-md btn-default" type="button">Back</button>
+        </a>
+        
+        </form>
+        {% if error %}
+            <p class="error"><strong>Error:</strong> {{ error }}
+        {% endif %}
 
         <!-- /.row -->
 
+        
 
         <!-- Footer -->
         </div>
