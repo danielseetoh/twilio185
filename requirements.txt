@@ -27,7 +27,7 @@ python-glanceclient==0.12.0
 python-keystoneclient==0.7.1
 python-neutronclient==2.3.4
 python-openid==2.2.5
-requests==2.9.1
+requests==2.9.1 
 Routes==2.0
 SecretStorage==2.0.0
 simplejson==3.3.1

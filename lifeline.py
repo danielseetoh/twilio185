@@ -18,19 +18,19 @@ http = urllib3.PoolManager(
     ca_certs=certifi.where(),  # Path to the Certifi bundle.
 )
 
-# print geocode_result[0]['geometry']['location'].values()
-# print reverse_geocode_result[0]['formatted_address']
-
 #loads account_sid and auth_token from private space
-config = imp.load_source('config', '../sensitive_data/config.py')
+# config = imp.load_source('config', '../sensitive_data/config.py')
 
-TWILIO_ACCOUNT_SID = config.TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN = config.TWILIO_AUTH_TOKEN
+TWILIO_ACCOUNT_SID = "AC1cd8c3e909b68424dfbacf1827360e82"
+TWILIO_AUTH_TOKEN = "3e4efeae33e9aae02ac8e345fc24ac6d"
 app = Flask(__name__, template_folder='templates')
-app.secret_key = config.SECRET_KEY
-gmaps = googlemaps.Client(key=config.GMAPS_KEY)
+app.secret_key = "jnsanjdLANSaskASNa\df\d'sudfcVYhbE8(66j21nSDUakxcm"
+gmaps = googlemaps.Client(key='AIzaSyB4RU21cQq8KX1Q_VKfLs8OEcj7hysJ_aA')
 client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+#search radius for app
 SEARCH_RADIUS = 400.0
+
 # connect to testdbdoc database
 try:
     con = db.connect(database="lifeline", user="postgres", password="seetoh", host="localhost")
