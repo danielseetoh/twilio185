@@ -77,7 +77,6 @@ PyYAML==3.10
 repoze.lru==0.6
 requests==2.9.1
 Routes==2.0
-scgi==1.13
 scipy==0.13.3
 SecretStorage==2.0.0
 simplegeneric==0.8.1
