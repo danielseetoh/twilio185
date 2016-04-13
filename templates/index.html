@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>LifeLine</title>
-    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-- Bootstrap Core CSS -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
 
@@ -70,7 +70,7 @@
                         <form class="form-inline" method = "POST" action = "/logout">
                             <!--<a href = "/logout">Logout</a>-->
                                 <button id="btnLogout" class="btn btn-sm btn-default" type="submit">Logout</button>
-                            
+
                         </form>
                     </li>
                 </ul>
@@ -88,7 +88,7 @@
                         <button id="btnLogin" class="btn btn-sm btn-default" type="submit">Login</button>
                         <a class="btn btn-default btn-sm" href="signup">Sign Up</a>
                     </form>
-                    
+
                 </ul>
                 {% endif %}
             </div>

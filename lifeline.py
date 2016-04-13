@@ -365,12 +365,17 @@ def new(username = None):
         return render_template('new.html', username = username)
     return render_template('index.html')
 
+
+
+
 def acknowledge_requestor(phonenumber):
     client.messages.create(
     body = "A medically trained personnel is on the way.",
     to = phonenumber,
     from_ = "+14245438814",
     )   
+
+
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))
