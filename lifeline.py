@@ -21,6 +21,7 @@ http = urllib3.PoolManager(
 #loads account_sid and auth_token from private space
 # config = imp.load_source('config', '../sensitive_data/config.py')
 
+#for heroku. need to improve security
 TWILIO_ACCOUNT_SID = "AC1cd8c3e909b68424dfbacf1827360e82"
 TWILIO_AUTH_TOKEN = "3e4efeae33e9aae02ac8e345fc24ac6d"
 app = Flask(__name__, template_folder='templates')
