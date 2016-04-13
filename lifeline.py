@@ -85,8 +85,8 @@ def sendmessage():
         _phonenumber = str(request.form['phonenumber'])
         # get the current hour in 24hr format from the requestor (workaround for timezones)
         _currenthour = int(request.form['currenthour'])
-        print _addresspoint, _phonenumber, _currenthour
-        print type(_addresspoint), type(_phonenumber), type(_currenthour)
+        # print _addresspoint, _phonenumber, _currenthour
+        # print type(_addresspoint), type(_phonenumber), type(_currenthour)
         # assuming _addresspoint is a tuple
         _address = gmaps.reverse_geocode(_addresspoint)[0]['formatted_address']
         # geocode_result = gmaps.geocode(_address)
@@ -212,7 +212,7 @@ def signup():
             return render_template('signup.html', error=error)
         session['username'] = _username
         con.commit()
-        return render_template('index.html', name=_username)
+        return redirect('user/'+session['username'])
     return render_template('signup.html')
 
 @app.route('/login', methods = ['GET', 'POST'] )
@@ -225,7 +225,7 @@ def login():
         result = cur.fetchall()
         if result:
             session['username'] = _username
-            return render_template('index.html', name=_username)
+            return redirect('user/' + session['username'] )
         else:
             error = "Invalid Username/Password combination"
             return render_template('login.html', error = error)
@@ -235,40 +235,42 @@ def login():
 @app.route('/logout', methods = ['GET', 'POST'])
 def logout():
     # remove the username from the session if it's there
-    if request.method == 'POST':
-        session.clear()
-        return render_template('index.html')
+    # if request.method == 'POST':
+    session.clear()
     return render_template('index.html')
+    # return render_template('index.html')
     
 @app.route('/user/<username>', methods = ['GET', 'POST'])
 def user(username = None):
-    if request.method == 'POST':
-        #change the db
-        if session['active'] == True:
-            session['active'] = False
-        else:
-            session['active'] = True
-        try:
-            cur.execute("UPDATE medics SET active = %s WHERE username = '%s'" % (session['active'], session['username']))
-            con.commit()
+    # if request.method == 'POST':
+    #     #change the db
+    #     if session['active'] == True:
+    #         session['active'] = False
+    #     else:
+    #         session['active'] = True
+    #     try:
+    #         cur.execute("UPDATE medics SET active = %s WHERE username = '%s'" % (session['active'], session['username']))
+    #         con.commit()
+    #         return render_template('user.html', username = username, active = session['active'])
+    #     except:
+    #         #change this soon.
+    #         return render_template('index.html')
+    try:
+        if session['username'] and session['username'] == username:
+            cur.execute("SELECT active FROM medics WHERE username = '%s'" % (session['username']))
+            result = cur.fetchall()
+            active = result[0][0]
+            session['active'] = active
+            cur.execute("SELECT address, starttime, endtime FROM addresses where username = '%s' ORDER BY address" % (session['username']))
+            result = cur.fetchall()
+            session['addresses'] = {}
+            for i in range(len(result)):
+                session['addresses'][i] = result[i]
+                # print type(i)
+                # print session['addresses'][i]
             return render_template('user.html', username = username, active = session['active'])
-        except:
-            #change this soon.
-            return render_template('index.html')
-    if session['username'] and session['username'] == username:
-        cur.execute("SELECT active FROM medics WHERE username = '%s'" % (session['username']))
-        result = cur.fetchall()
-        active = result[0][0]
-        session['active'] = active
-        cur.execute("SELECT address, starttime, endtime FROM addresses where username = '%s' ORDER BY address" % (session['username']))
-        result = cur.fetchall()
-        session['addresses'] = {}
-        for i in range(len(result)):
-            session['addresses'][i] = result[i]
-            print type(i)
-            print session['addresses'][i]
-        return render_template('user.html', username = username, active = session['active'])
-    return render_template('index.html')
+    except:
+        return redirect('/')
 
 @app.route('/edit/<username>', methods = ['GET', 'POST'])
 def edit(username = None, error = None):
@@ -286,7 +288,7 @@ def edit(username = None, error = None):
         if request.method == 'POST':
             try:
                 if request.form['delete']:
-                    del_id = request.form['delete'][6:]
+                    del_id = int(request.form['delete'][6:])
                     cur.execute("DELETE from addresses WHERE username = '{}' and address = '{}' and starttime = '{}' and endtime = '{}'".format(session['username'], session['addresses'][del_id][0], session['addresses'][del_id][1], session['addresses'][del_id][2]))
                     con.commit()
                     return redirect('edit/' + session['username'])
@@ -328,16 +330,6 @@ def edit(username = None, error = None):
                         cur.execute("DELETE from addresses WHERE username = '{}' and address = '{}' and starttime = '{}' and endtime = '{}'".format(session['username'], session['addresses'][i][0], session['addresses'][i][1], session['addresses'][i][2]))
                 con.commit()
                 return redirect('user/'+session['username'])
-        # if session['username'] and session['username'] == username:
-        #     cur.execute("SELECT active FROM medics WHERE username = '%s'" % (session['username']))
-        #     result = cur.fetchall()
-        #     active = result[0][0]
-        #     session['active'] = active
-        #     cur.execute("SELECT address, starttime, endtime FROM addresses where username = '%s' ORDER BY address" % (session['username']))
-        #     result = cur.fetchall()
-        #     session['addresses'] = {}
-        #     for i in range(len(result)):
-        #         session['addresses'][i] = result[i]
         return render_template('edit.html', username = username)
     return render_template('index.html')
 

@@ -100,15 +100,17 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="tagline">LifeLine</h1>
+                    <!--<h1 class="tagline">LifeLine</h1>-->
                 </div>
             </div>
         </div>
     </header>
     <div class="container">
-        <h2>Sign up</h2>
-        <p>If you are a medically certified professional, we need your help! Fill up the form below. You may input up to three addresses that you usually reside at and the time that you will be available at each address. This is how we will locate your presence at each area should there be emergencies nearby. Addresses beyond the first address is optional.</p>
-        <div class="col-sm-6 ">
+        <div class="col-sm-6 col-sm-offset-3">
+        <h2 class="text-center">Sign up</h2>
+        <hr>
+        <p>Input up to three initial addresses and the times when you are available at these addresses.</p>
+        
             <form class="form-signin" method = "POST">
                 <label for="username" class="sr-only">Name</label>
                 <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
@@ -169,14 +171,15 @@
             {% if error %}
                 <p class="error"><strong>Error:</strong> {{ error }}
             {% endif %}
-        </div>        
-    </div>
+
 
         <!-- /.row -->
-
-        <hr>
+        </div> 
+        
 
         <!-- Footer -->
+        <div class="col-sm-12">
+        <hr>
         <footer>
             <div class="row">
                 <div class="col-lg-12">
@@ -185,7 +188,10 @@
             </div>
             <!-- /.row -->
         </footer>
-
+        
+        </div>
+               
+    </div>
     </div>
     <!-- /.container -->
 

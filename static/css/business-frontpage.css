@@ -12,7 +12,7 @@ body {
 
 .business-header {
     height: 400px;
-    background: url('../images/mainbanner.jpg') center center no-repeat scroll;
+    background: url('../images/bannerimpression4.png') center center no-repeat scroll;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     background-size: cover;
@@ -34,3 +34,7 @@ footer {
     margin: 50px 0;
 }
 
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
