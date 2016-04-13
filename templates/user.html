@@ -107,16 +107,35 @@
     
     
     <div class="container">
-        <h2 class="text-center">Welcome {{session['username']}}!</h2>
-        <hr>
+        <div class="page-header">
+            <h2 class="text-center">Welcome {{session['username']}}!</h2>
+        </div>
         <br>
         <div class="col-sm-6 ">
-            <p><b>Currently Active: </b>{{active}}</p>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Active</h3>
+              </div>
+              <div class="panel-body">
+                {{active}}
+              </div>
+            </div>
             {% for i in session['addresses'] %}
-            <br>
-            <p><b>Address{{i+1}}: </b>{{session['addresses'][i][0]}}</p>
-            <p><b>Available from: </b>{{session['addresses'][i][1]}}.00 hrs</p>
-            <p><b>Available till: </b>{{session['addresses'][i][2]}}.00 hrs</p>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Address {{i+1}}</h3>
+              </div>
+              <div class="panel-body">
+                {{session['addresses'][i][0]}}
+              </div>
+              <div class="panel-body">
+                Active From: {{session['addresses'][i][1]}}.00 hrs
+              </div>
+              <div class="panel-body">
+                Active Till: {{session['addresses'][i][2]}}.00 hrs
+              </div>
+            </div>
+
             {% endfor %}
             
             <!--<form class="form-inline" method = "POST" action = "/edit/{{session['username']}}">-->
