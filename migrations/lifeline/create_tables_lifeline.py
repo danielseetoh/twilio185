@@ -2,7 +2,8 @@ import psycopg2 as db
 import sys
 
 # try:
-con = db.connect(database="lifeline", user="postgres", password="seetoh", host="localhost")
+# con = db.connect(database="lifeline", user="postgres", password="seetoh", host="localhost")
+con = db.connect(database="d72u744na5jpsd", user="qbpjlfpyculjic", password="bcARp8SLV8-fO0KgLoUPT9sJBD", host="ec2-23-21-255-14.compute-1.amazonaws.com")
 print 'Success!'
 
 cur = con.cursor()
