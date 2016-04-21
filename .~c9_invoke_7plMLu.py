@@ -1,7 +1,7 @@
 import psycopg2 as db
 import sys
 import os
-from flask import Flask, request, Response, render_template, session, redirect, json, url_for, send_file
+from flask import Flask, request, Response, render_template, session, redirect, json, url_for
 from twilio import twiml
 from twilio.rest import TwilioRestClient
 import imp
@@ -11,9 +11,6 @@ import urllib3.contrib.pyopenssl
 import googlemaps
 from datetime import datetime
 import phonenumbers as ph
-from base64 import b64encode
-from PIL import Image
-import StringIO
 
 urllib3.contrib.pyopenssl.inject_into_urllib3()
 # To allow python 2.7.6 to send safe http requests
@@ -113,7 +110,7 @@ def sendmessage():
             con.commit()
             username = 'danielseetoh' # just to message only me
             # gets all medics within the area that are active at this time.
-            cur.execute("SELECT DISTINCT ON (medics.phonenumber) medics.phonenumber FROM medics,addresses WHERE medics.username = addresses.username AND medics.active = True AND ST_DWithin(addresses.geog, '{}', '{}') AND addresses.starttime<= '{}' AND addresses.endtime > '{}' AND medics.validated = True".format(_geog, SEARCH_RADIUS, _currenthour, _currenthour))
+            cur.execute("SELECT DISTINCT ON (medics.phonenumber) medics.phonenumber FROM medics,addresses WHERE medics.username = addresses.username AND medics.active = True AND ST_DWithin(addresses.geog, '{}', '{}') AND addresses.starttime<= '{}' AND addresses.endtime > '{}'".format(_geog, SEARCH_RADIUS, _currenthour, _currenthour))
             medic_phone_numbers = cur.fetchall()
             print medic_phone_numbers
             for number in medic_phone_numbers:
@@ -226,24 +223,22 @@ def signup():
         try:
             file = request.files['file']
             _filename = file.filename
-            print _filename
+            filedata = db.Binary(f.read())
             _filedata = db.Binary(file.read())
         except:
             error = "There is an issue with your uploaded file.{}".format(request.form)
             return render_template('signup.html', error=error)
-        try:
-            cur.execute("INSERT INTO medics (username, password, phonenumber, active, filename, filedata, validated, pending)\
+        # try:
+        cur.execute("INSERT INTO medics (username, password, phonenumber, active, filename, filedata, validated, pending)\
         VALUES ('{}', '{}', '{}', True, '{}', {}, False, True)".format(_username, _password, _phonenumber, _filename, _filedata))
-            for infolist in addresslist:
-                cur.execute("INSERT INTO addresses (username, address, addresspoint, starttime, endtime, geog)\
-                VALUES('{}', '{}', '{}', '{}', '{}', '{}')".format(_username, infolist[0], infolist[1], infolist[2], infolist[3], infolist[4]))
-        except:
-            error = 'Unable to insert into database.'
-            return render_template('signup.html', error=error)
+        for infolist in addresslist:
+            cur.execute("INSERT INTO addresses (username, address, addresspoint, starttime, endtime, geog)\
+            VALUES('{}', '{}', '{}', '{}', '{}', '{}')".format(_username, infolist[0], infolist[1], infolist[2], infolist[3], infolist[4]))
+        # except:
+        #     error = 'Unable to insert into database.'
+        #     return render_template('signup.html', error=error)
         session['username'] = _username
         con.commit()
-        if session['username'] == 'admin':
-            return redirect('/admin')
         return redirect('user/'+session['username'])
     return render_template('signup.html')
 
@@ -257,10 +252,7 @@ def login():
         result = cur.fetchall()
         if result:
             session['username'] = _username
-            if session['username'] == 'admin':
-                return redirect('/admin')
-            else:
-                return redirect('user/' + session['username'] )
+            return redirect('user/' + session['username'] )
         else:
             error = "Invalid Username/Password combination"
             return render_template('login.html', error = error)
@@ -269,57 +261,19 @@ def login():
     
 @app.route('/logout', methods = ['GET', 'POST'])
 def logout():
+    # remove the username from the session if it's there
+    # if request.method == 'POST':
     session.clear()
     return render_template('index.html')
+    # return render_template('index.html')
     
-@app.route('/admin', methods = ['GET', 'POST'])
-def admin():
-    try:
-        if session['username'] and session['username'] == 'admin':
-            cur.execute("SELECT username, filedata FROM medics WHERE pending = True")
-            result = cur.fetchall()
-            if request.method == 'POST':
-                try:
-                    if request.form['validate']:
-                        val_id = int(request.form['validate'][8:])
-                        username = result[val_id][0]
-                        cur.execute("UPDATE medics SET pending = False, validated = True WHERE username = '{}' ".format(username))
-                        con.commit()
-                        return redirect('/admin')
-                except:
-                    if request.form['deny']:
-                        deny_id = int(request.form['deny'][4:])
-                        username = result[deny_id][0]
-                        cur.execute("UPDATE medics SET pending = False WHERE username = '{}' ".format(username))
-                        con.commit()
-                        return redirect('/admin')
-                else:
-                    return redirect('/')
-            for i in range(len(result)):
-                # encode all images
-                result[i] = (result[i][0], b64encode(result[i][1]))
-            cur.execute("SELECT count(*) from medics")
-            numMedics = int(cur.fetchall()[0][0])
-            cur.execute("SELECT count(*) from requests")
-            numRequests = int(cur.fetchall()[0][0])
-            
-            return render_template('admin.html', pendingusers = result, lengthpendingusers = len(result), nummedics = numMedics, numrequests = numRequests)
-    except:
-        return redirect('/')
-        
 @app.route('/user/<username>', methods = ['GET', 'POST'])
 def user(username = None):
     try:
-        if session['username'] == 'admin':
-            return redirect('/admin')
         if session['username'] and session['username'] == username:
-            cur.execute("SELECT active, filename, filedata, validated FROM medics WHERE username = '%s'" % (session['username']))
+            cur.execute("SELECT active,  FROM medics WHERE username = '%s'" % (session['username']))
             result = cur.fetchall()
             active = result[0][0]
-            filename = result[0][1]
-            filedata = result[0][2]
-            validated = result[0][3]
-            data = b64encode(filedata)
             session['active'] = active
             cur.execute("SELECT address, starttime, endtime FROM addresses where username = '%s' ORDER BY address" % (session['username']))
             result = cur.fetchall()
@@ -328,11 +282,9 @@ def user(username = None):
                 session['addresses'][i] = result[i]
                 # print type(i)
                 # print session['addresses'][i]
-            return render_template('user.html', username = username, active = session['active'], image = data, validated = validated)
+            return render_template('user.html', username = username, active = session['active'])
     except:
         return redirect('/')
-
-
 
 @app.route('/edit/<username>', methods = ['GET', 'POST'])
 def edit(username = None, error = None):

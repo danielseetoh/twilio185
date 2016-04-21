@@ -45,13 +45,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#">About</a>
+                        <a href="/about">About</a>
                     </li>
                     <li>
-                        <a href="#">Services</a>
+                        <a href="/services">Services</a>
                     </li>
                     <li>
-                        <a href="#">Contact</a>
+                        <a href="/contact">Contact</a>
                     </li>
                 </ul>
                 {% if session['username'] %}
@@ -108,73 +108,80 @@
     
     
     <div class="container">
-        <div class="col-sm-6 col-sm-offset-3">
+
         <h2 class="text-center">Sign up</h2>
         <hr>
-        <p>Input up to three initial addresses and the times when you are available at these addresses.</p>
-        
-            <form class="form-signin" method = "POST">
-                <label for="username" class="sr-only">Name</label>
-                <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
-                <label for="password" class="sr-only">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-                <label for="phonenumber" class="sr-only">Email Address</label>
-                <input type="phonenumber" name="phonenumber" id="phonenumber" class="form-control" placeholder="Full Phone Number" required autofocus>
-                <br>
-                <label for="address1" class="sr-only">Full First Address</label>
-                <input name="address1" id="address1" class="form-control" placeholder="First Address" required>
-                <select class="form-control" name="starttime1" required>
-                    <option value="" disabled selected hidden>Available From:</option>
-                    {% for i in range(0,25) %}
-                    <option value="{{i}}">{{i}}:00 hrs</option>
-                    {% endfor %}
-                </select>
-                <select class="form-control" name="endtime1" required>
-                    <option value="" disabled selected hidden>Available Till:</option>
-                    {% for i in range(0,25) %}
-                    <option value="{{i}}">{{i}}:00 hrs</option>
-                    {% endfor %}
-                </select>
-                <br>
-                <!--optional second and third addresses-->
-                <!--need to add input validation for the second and third one for timing-->
-                <label for="address2" class="sr-only">Full Second Address</label>
-                <input name="address2" id="address2" class="form-control" placeholder="Second Address (optional)">
-                <select class="form-control" name="starttime2">
-                    <option value="" disabled selected hidden>Available From:</option>
-                    {% for i in range(0,25) %}
-                    <option value="{{i}}">{{i}}:00 hrs</option>
-                    {% endfor %}
-                </select>
-                <select class="form-control" name="endtime2">
-                    <option value="" disabled selected hidden>Available Till:</option>
-                    {% for i in range(0,25) %}
-                    <option value="{{i}}">{{i}}:00 hrs</option>
-                    {% endfor %}
-                </select>
-                <br>
-                <label for="address3" class="sr-only">Full Third Address</label>
-                <input name="address3" id="address3" class="form-control" placeholder="Third Address (optional)">     
-                <select class="form-control" name="starttime3">
-                    <option value="" disabled selected hidden>Available From:</option>
-                    {% for i in range(0,25) %}
-                    <option value="{{i}}">{{i}}:00 hrs</option>
-                    {% endfor %}
-                </select>
-                <select class="form-control" name="endtime3">
-                    <option value="" disabled selected hidden>Available Till:</option>
-                    {% for i in range(0,25) %}
-                    <option value="{{i}}">{{i}}:00 hrs</option>
-                    {% endfor %}
-                </select>
-                <br>
-                <button id="btnSignUp" class="btn btn-md btn-primary btn-block" type="submit">Sign up</button>
-            </form>    
-            {% if error %}
-                <p class="error"><strong>Error:</strong> {{ error }}
-            {% endif %}
-
-
+        <div class="col-sm-6 col-sm-offset-3 panel panel-default">
+            <div class="panel-body">
+                <p>Input up to three initial addresses and the times when you are available at these addresses.</p>
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <p class="error"><strong>Error:</strong> {{ error }}
+                    </div>
+                {% endif %}
+                <form class="form-signin" method = "POST" enctype="multipart/form-data">
+                    <label for="username" class="sr-only">Name</label>
+                    <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                    <label for="phonenumber" class="sr-only">Email Address</label>
+                    <input type="phonenumber" name="phonenumber" id="phonenumber" class="form-control" placeholder="Full Phone Number, e.g. +1(510)123-0938" required autofocus>
+                    <br>
+                    <label for="address1" class="sr-only">Full First Address</label>
+                    <input name="address1" id="address1" class="form-control" placeholder="First Address" required>
+                    <select class="form-control" name="starttime1" required>
+                        <option value="" disabled selected hidden>Available From:</option>
+                        {% for i in range(0,25) %}
+                        <option value="{{i}}">{{i}}:00 hrs</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" name="endtime1" required>
+                        <option value="" disabled selected hidden>Available Till:</option>
+                        {% for i in range(0,25) %}
+                        <option value="{{i}}">{{i}}:00 hrs</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <!--optional second and third addresses-->
+                    <!--need to add input validation for the second and third one for timing-->
+                    <label for="address2" class="sr-only">Full Second Address</label>
+                    <input name="address2" id="address2" class="form-control" placeholder="Second Address (optional)">
+                    <select class="form-control" name="starttime2">
+                        <option value="" disabled selected hidden>Available From:</option>
+                        {% for i in range(0,25) %}
+                        <option value="{{i}}">{{i}}:00 hrs</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" name="endtime2">
+                        <option value="" disabled selected hidden>Available Till:</option>
+                        {% for i in range(0,25) %}
+                        <option value="{{i}}">{{i}}:00 hrs</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <label for="address3" class="sr-only">Full Third Address</label>
+                    <input name="address3" id="address3" class="form-control" placeholder="Third Address (optional)">     
+                    <select class="form-control" name="starttime3">
+                        <option value="" disabled selected hidden>Available From:</option>
+                        {% for i in range(0,25) %}
+                        <option value="{{i}}">{{i}}:00 hrs</option>
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" name="endtime3">
+                        <option value="" disabled selected hidden>Available Till:</option>
+                        {% for i in range(0,25) %}
+                        <option value="{{i}}">{{i}}:00 hrs</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    Include an image file as proof of your medical certification. We are currently looking for people who have a minimum of an advanced certificate in first-aid.
+                    <input type="file" name="file" accept="image/*" required>
+                    <br>
+                    <button id="btnSignUp" class="btn btn-md btn-primary btn-block" type="submit">Sign up</button>
+                </form>    
+    
+            </div>
+            
         <!-- /.row -->
         </div> 
         

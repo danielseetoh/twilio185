@@ -9,13 +9,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>User</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <!-- Bootstrap Core CSS -->
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <title>Our Services</title>
 
+    <!-- Bootstrap Core CSS -->
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <!-- Custom CSS -->
-    <link href="../static/css/business-frontpage.css" rel="stylesheet">
+    <link href="static/css/business-frontpage.css" rel="stylesheet">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -44,13 +45,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="/about">About</a>
+                        <a href="/about">About Us</a>
                     </li>
                     <li>
-                        <a href="/services">Services</a>
+                        <a href="/services">Our Services</a>
                     </li>
                     <li>
-                        <a href="/contact">Contact</a>
+                        <a href="/contact">Contact Us</a>
                     </li>
                 </ul>
                 {% if session['username'] %}
@@ -92,80 +93,63 @@
         </div>
         <!-- /.container -->
     </nav>
+
+    <!-- Image Background Page Header -->
+    <!-- Note: The background image is set within the business-casual.css file. -->
+    <!--<header class="business-header">-->
+    <!--    <div class="container">-->
+    <!--        <div class="row">-->
+    <!--            <div class="col-lg-12">-->
+                    <!--<h1 class="tagline">LifeLine</h1>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--</header>-->
     
     
     <div class="container">
-        <div class="page-header">
-            <h2 class="text-center">Welcome {{session['username']}}!</h2>
-        </div>
+        <div class="col-sm-10 col-sm-offset-1">
+        <h2 class="text-center">Our Services</h2>
+        <hr>
+        <p align="justify">LifeLine is a multi-functional app which primarily aims to get nearby responders
+        to help victims while waiting for the ambulance to arrive. We believe that every single
+        minute can make a difference in a victim's life, and this is the very foundation of our
+        solution. We also offer a handy first aid kit manual to assist users when diagnosing symptoms
+        or performing basic treatments for mere injuries as well as emergency cases. Ultimately,
+        LifeLine strives towards becoming the first solution that people will think of when they are facing
+        an emergency.</p>
         <br>
-        <div class="col-sm-6 ">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Active</h3>
-              </div>
-              <div class="panel-body">
-                {{active}}
-              </div>
+        <br>
+   
+        <div class="row">
+            <div class="col-sm-4">
+                <img class="img-circle img-responsive img-center" src="static/images/newambulance.png" alt="">
+                <h3 class="text-center">Quick and Reliable Help</h3>
+                <p align="justify">It is of paramount importance that users can use our app without any difficulty. Check out how our app functions.</p>
+                <a class="btn btn-default btn-lg" href="#">Watch Demo! &raquo;</a>
             </div>
-            {% for i in session['addresses'] %}
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Address {{i+1}}</h3>
-              </div>
-              <div class="panel-body">
-                {{session['addresses'][i][0]}}
-              </div>
-              <div class="panel-body">
-                Active From: {{session['addresses'][i][1]}}.00 hrs
-              </div>
-              <div class="panel-body">
-                Active Till: {{session['addresses'][i][2]}}.00 hrs
-              </div>
+            <div class="col-sm-4">
+                <img class="img-circle img-responsive img-center" src="static/images/mortality.jpg" alt="">
+                <h3 class="text-center">First Aid Kit Manual</h3>
+                <p align="justify">Don't know how to deal with emergency cases? Our app provides a step-by-step guide to deal with most injuries!</p>
+                <a class="btn btn-default btn-lg" href="signup">Simple Manual! &raquo;</a>
             </div>
+            <div class="col-sm-4">
+                <img class="img-circle img-responsive img-center" src="static/images/housing.jpg" alt="">
+                <h3 class="text-center">Donation</h3>
+                <p align="justify">As a non-profit entity, we heavily depend on government grants and your kind donation. Your contribution will go a long way to ensure the sustainability and development of LifeLine.</p>
+                <a class="btn btn-default btn-lg" href="signup">Donate Now! &raquo;</a>
+            </div>
+        </div> 
 
-            {% endfor %}
-            
-            <!--<form class="form-inline" method = "POST" action = "/edit/{{session['username']}}">-->
-            <!--    <div class = "form-group">-->
-            <!--        <button id="btnChangeActive" class="btn btn-md btn-default" type="submit">Edit</button>-->
-            <!--    </div>-->
-            <!--</form>-->
-            <br>
-            <a href="/edit/{{session['username']}}">
-                <button id="btnEdit" class="btn btn-md btn-default" type="button">Edit</button>
-            </a>
-            <a href="/new/{{session['username']}}">
-                <button id="btnNew" class="btn btn-md btn-default" type="button">Add Address</button>
-            </a>
-            <!--{{image}}-->
-            
-            <!--<img src="data:image/png;base64,{{image}}"/>-->
+     
+
 
         <!-- /.row -->
-
+        </div> 
+        
 
         <!-- Footer -->
-        </div>
-        <div class="col-sm-6">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Validated</h3>
-              </div>
-              <div class="panel-body">
-                  {{validated}}
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Validation Document</h3>
-              </div>
-              <div class="panel-body">
-                  <img src="data:;base64,{{image}}" class="validation"/>
-              </div>
-            </div>
-            
-        </div>
         <div class="col-sm-12">
         <hr>
         <footer>
@@ -178,15 +162,11 @@
         </footer>
         
         </div>
-    
-    <!-- /.container -->
+               
     </div>
-    
-    <!-- Button trigger modal -->
-    
-    
+    </div>
+    <!-- /.container -->
 
-        
     <!-- jQuery -->
     <script src="static/js/jquery.js"></script>
 

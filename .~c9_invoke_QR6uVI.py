@@ -274,38 +274,41 @@ def logout():
     
 @app.route('/admin', methods = ['GET', 'POST'])
 def admin():
-    try:
+    # try:
         if session['username'] and session['username'] == 'admin':
             cur.execute("SELECT username, filedata FROM medics WHERE pending = True")
             result = cur.fetchall()
             if request.method == 'POST':
-                try:
-                    if request.form['validate']:
-                        val_id = int(request.form['validate'][8:])
-                        username = result[val_id][0]
-                        cur.execute("UPDATE medics SET pending = False, validated = True WHERE username = '{}' ".format(username))
-                        con.commit()
-                        return redirect('/admin')
-                except:
-                    if request.form['deny']:
-                        deny_id = int(request.form['deny'][4:])
-                        username = result[deny_id][0]
-                        cur.execute("UPDATE medics SET pending = False WHERE username = '{}' ".format(username))
-                        con.commit()
-                        return redirect('/admin')
-                else:
-                    return redirect('/')
-            for i in range(len(result)):
+                if request.form['validate']:
+                    val_id = int(request.form['validate'][8:])
+                    username = result[val_id][0]
+                    cur.execute("UPDATE medics SET pending = False, validated = True WHERE username = '{}' ".format(username))
+                    con.commit()
+                    return redirect('/admin')
+                elif request.form['deny']:
+                    deny_id = int(request.form['deny'][4:])
+                    username = result[deny_id][0]
+                    cur.execute("UPDATE medics SET pending = False WHERE username = '{}' ".format(username))
+                    con.commit()
+                    return redirect('/admin')
+                e
+            return render_template('admin.html', validated = validated, )
                 # encode all images
                 result[i] = (result[i][0], b64encode(result[i][1]))
-            cur.execute("SELECT count(*) from medics")
-            numMedics = int(cur.fetchall()[0][0])
-            cur.execute("SELECT count(*) from requests")
-            numRequests = int(cur.fetchall()[0][0])
             
-            return render_template('admin.html', pendingusers = result, lengthpendingusers = len(result), nummedics = numMedics, numrequests = numRequests)
-    except:
-        return redirect('/')
+            return render_template('admin.html', pendingusers = result, lengthpendingusers = len(result))
+    # except:
+    #     return redirect('/')
+        
+# @app.route('/validate', methods = ['GET', 'POST'])
+# def validate():
+#     if request.method == 'POST':
+        # if request.form['validate']:
+        #     val_id = int(request.form['validate'][8:])
+        #     cur.execute("UPDATE medics SET pending = False, validated =  WHERE username = '{}' ".format(_username))
+#             cur.execute("DELETE from addresses WHERE username = '{}' and address = '{}' and starttime = '{}' and endtime = '{}'".format(session['username'], session['addresses'][del_id][0], session['addresses'][del_id][1], session['addresses'][del_id][2]))
+#             con.commit()
+#             return redirect('edit/' + session['username'])
         
 @app.route('/user/<username>', methods = ['GET', 'POST'])
 def user(username = None):

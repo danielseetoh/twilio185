@@ -38,3 +38,16 @@ footer {
     float: none;
     margin: 0 auto;
 }
+
+.validation {
+    width:100%;
+    
+}
+
+.admin-validation-thumbnail {
+    width:30%;
+}
+
+.admin-validation-large {
+    width:100%;
+}

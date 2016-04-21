@@ -44,13 +44,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#">About</a>
+                        <a href="/about">About</a>
                     </li>
                     <li>
-                        <a href="#">Services</a>
+                        <a href="/services">Services</a>
                     </li>
                     <li>
-                        <a href="#">Contact</a>
+                        <a href="/contact">Contact</a>
                     </li>
                 </ul>
                 {% if session['username'] %}
@@ -107,67 +107,76 @@
     
     <div class="container">
         <div class="page-header">
-            <h2 class="text-center">Welcome {{session['username']}}!</h2>
+            <h2 class="text-center">Edit Status</h2>
         </div>
         <br>
-        <div class="col-sm-6 ">
-        <form action = "/edit/{{session['username']}}" method = "POST">
-            <b>Currently Active/Not Active:</b>
-            <select class="form-control" name="active" required>
-                {% if session['active'] %}
-                <option value="act" selected>Active</option>
-                <option value="notact">Not Active</option>
-                {% else %}
-                <option value="act">Active</option>
-                <option value="notact" selected>Not Active</option>
+        <div class="col-sm-6 col-sm-offset-3 panel panel-default">
+            <div class="panel-body">
+                <!--<div class="col-sm-6 ">-->
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <p class="error"><strong>Error:</strong> {{ error }}
+                    </div>
                 {% endif %}
-            </select>
-            {% for i in session['addresses'] %}
-            <br>
-            <b>Address {{i+1}}</b>
-            <input type="text" name="address{{i}}" id="address{{i}}" class="form-control" value="{{session['addresses'][i][0]}}">
-            <select class="form-control" name="starttime{{i}}" required>
-                <!--<option value="{{session['addresses'][i][1]}}" disabled selected hidden>{{session['addresses'][i][1]}}</option>-->
-                {% for j in range(0,25) %}
-                {% if j == session['addresses'][i][1] %}
-                <option value="{{j}}" selected>{{j}}:00 hrs</option>
-                {% else %}
-                <option value="{{j}}">{{j}}:00 hrs</option>
-                {% endif %}
-                {% endfor %}
-            </select>
-            <select class="form-control" name="endtime{{i}}" required>
-                {% for j in range(0,25) %}
-                {% if j == session['addresses'][i][2] %}
-                <option value="{{j}}" selected>{{j}}:00 hrs</option>
-                {% else %}
-                <option value="{{j}}">{{j}}:00 hrs</option>
-                {% endif %}
-                {% endfor %}
-            </select>
-            <button type="submit" name="delete" value="delete{{i}}" class="btn btn-md btn-danger">Delete</button>
-            <br>
-            {% endfor %}
-         
-        
-        <br>
-        <button id="submit" type="submit" class="btn btn-md btn-default">Save</button>
-        
-        <a href="/user/{{session['username']}}">
-            <button id="btnUser" class="btn btn-md btn-default" type="button">Back</button>
-        </a>
-        
-        </form>
-        {% if error %}
-            <p class="error"><strong>Error:</strong> {{ error }}
-        {% endif %}
+                <form action = "/edit/{{session['username']}}" method = "POST">
+                    <b>Currently Active/Not Active:</b>
+                    <select class="form-control" name="active" required>
+                        {% if session['active'] %}
+                        <option value="act" selected>Active</option>
+                        <option value="notact">Not Active</option>
+                        {% else %}
+                        <option value="act">Active</option>
+                        <option value="notact" selected>Not Active</option>
+                        {% endif %}
+                    </select>
+                    {% for i in session['addresses'] %}
+                    <br>
+                    <b>Address {{i+1}}</b>
+                    <input type="text" name="address{{i}}" id="address{{i}}" class="form-control" value="{{session['addresses'][i][0]}}">
+                    <select class="form-control" name="starttime{{i}}" required>
+                        <!--<option value="{{session['addresses'][i][1]}}" disabled selected hidden>{{session['addresses'][i][1]}}</option>-->
+                        {% for j in range(0,25) %}
+                        {% if j == session['addresses'][i][1] %}
+                        <option value="{{j}}" selected>{{j}}:00 hrs</option>
+                        {% else %}
+                        <option value="{{j}}">{{j}}:00 hrs</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <select class="form-control" name="endtime{{i}}" required>
+                        {% for j in range(0,25) %}
+                        {% if j == session['addresses'][i][2] %}
+                        <option value="{{j}}" selected>{{j}}:00 hrs</option>
+                        {% else %}
+                        <option value="{{j}}">{{j}}:00 hrs</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit" name="delete" value="delete{{i}}" class="btn btn-md btn-danger">Delete</button>
+                    <br>
+                    {% endfor %}
+                 
+                
+                <br>
+                <button id="submit" type="submit" class="btn btn-md btn-success">Save</button>
+                
+                <a href="/user/{{session['username']}}">
+                    <button id="btnUser" class="btn btn-md btn-default" type="button">Back</button>
+                </a>
+                
+                </form>
+            </div>
+        </div>
+        <!--{% if error %}-->
+        <!--    <p class="error"><strong>Error:</strong> {{ error }}-->
+        <!--{% endif %}-->
 
         <!-- /.row -->
 
         
 
         <!-- Footer -->
-        </div>
+        <!--</div>-->
         <div class="col-sm-12">
         <hr>
         <footer>

@@ -3,11 +3,10 @@ import sys
 
 # try:
 # con = db.connect(database="lifeline", user="postgres", password="seetoh", host="localhost")
-con = db.connect(database="d72u744na5jpsd", user="qbpjlfpyculjic", password="bcARp8SLV8-fO0KgLoUPT9sJBD", host="ec2-23-21-255-14.compute-1.amazonaws.com")
+con = db.connect(database="lifeline", user="postgres", password="seetoh", host="localhost")
 print 'Success!'
 
 cur = con.cursor()
-        
     # try:
 # addresses of medics are stored in a address table, with foreign key username.
 cur.execute("CREATE TABLE medics ( \
@@ -25,6 +24,7 @@ id bigserial PRIMARY KEY NOT NULL, \
 phonenumber varchar NOT NULL, \
 addresspoint point NOT NULL, \
 responded boolean NOT NULL,\
+name varchar NOT NULL,\
 geog GEOGRAPHY(POINT,4326));") 
 
 # Static addresses of medical personnel. Each medical personnel can have more than 1 static address. 

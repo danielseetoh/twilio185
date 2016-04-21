@@ -93,78 +93,88 @@
         <!-- /.container -->
     </nav>
     
-    
-    <div class="container">
-        <div class="page-header">
-            <h2 class="text-center">Welcome {{session['username']}}!</h2>
-        </div>
-        <br>
-        <div class="col-sm-6 ">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Active</h3>
-              </div>
-              <div class="panel-body">
-                {{active}}
-              </div>
-            </div>
-            {% for i in session['addresses'] %}
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Address {{i+1}}</h3>
-              </div>
-              <div class="panel-body">
-                {{session['addresses'][i][0]}}
-              </div>
-              <div class="panel-body">
-                Active From: {{session['addresses'][i][1]}}.00 hrs
-              </div>
-              <div class="panel-body">
-                Active Till: {{session['addresses'][i][2]}}.00 hrs
-              </div>
-            </div>
 
-            {% endfor %}
-            
-            <!--<form class="form-inline" method = "POST" action = "/edit/{{session['username']}}">-->
-            <!--    <div class = "form-group">-->
-            <!--        <button id="btnChangeActive" class="btn btn-md btn-default" type="submit">Edit</button>-->
-            <!--    </div>-->
-            <!--</form>-->
+
+
+
+
+        <div class="container">
+            <div class="page-header">
+                <h2 class="text-center">Dashboard</h2>
+            </div>
             <br>
-            <a href="/edit/{{session['username']}}">
-                <button id="btnEdit" class="btn btn-md btn-default" type="button">Edit</button>
-            </a>
-            <a href="/new/{{session['username']}}">
-                <button id="btnNew" class="btn btn-md btn-default" type="button">Add Address</button>
-            </a>
-            <!--{{image}}-->
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Total Number of Medical Personnel
+                    </div>
+                    <div class="panel-body">
+                        {{nummedics}}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Total Number of Requests
+                    </div>
+                    <div class="panel-body">
+                        {{numrequests}}
+                    </div>
+                </div>
+            </div>
             
-            <!--<img src="data:image/png;base64,{{image}}"/>-->
-
-        <!-- /.row -->
-
-
-        <!-- Footer -->
+            
+            
+            <div class="col-md-8">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                  <h3 class="panel-title">Pending Validations</h3>
+              </div>
+              <form action = "/admin" method = "POST">
+              <div class="panel-body">
+                  {% for i in range(lengthpendingusers) %}
+                  <div class="panel panel-default">
+                      <div class="panel-body">
+                          <div class="col-md-2">
+                              <b>{{ pendingusers[i][0] }}</b>
+                          </div>
+                          <div class="col-md-6">
+                              <div class="row  text-center">
+                                  <img src="data:;base64,{{ pendingusers[i][1] }}" class="admin-validation-thumbnail"/>
+                              </div>
+                              <div class="row  text-center">
+                              <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal{{i}}">Enlarge</button>
+                              </div>
+                                  <div class="modal fade" id="myModal{{i}}" role="dialog">
+                                    <div class="modal-dialog modal-lg">
+                                      <div class="modal-content">
+                                        <div class="modal-body">
+                                          <img src="data:;base64,{{ pendingusers[i][1] }}" class="admin-validation-large"/>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+                              
+                          </div>
+                          <div class="col-md-4">
+                              <button type="submit" name="validate" value="validate{{i}}" class="btn btn-success">Validate</button>
+                              <button type="submit" name="deny" value="deny{{i}}" class="btn btn-danger">Deny</button>
+                          </div>
+                      </div>
+                  </div>
+                  {% endfor %}
+              </div>
+              </form>
+            </div>
+        
         </div>
-        <div class="col-sm-6">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Validated</h3>
-              </div>
-              <div class="panel-body">
-                  {{validated}}
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Validation Document</h3>
-              </div>
-              <div class="panel-body">
-                  <img src="data:;base64,{{image}}" class="validation"/>
-              </div>
-            </div>
+  
             
+        </div>
+
+        
         </div>
         <div class="col-sm-12">
         <hr>
