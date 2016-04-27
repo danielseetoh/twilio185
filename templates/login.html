@@ -45,13 +45,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="/about">About</a>
+                        <a href="/about">About Us</a>
                     </li>
                     <li>
                         <a href="/services">Services</a>
                     </li>
                     <li>
-                        <a href="/contact">Contact</a>
+                        <a href="/contact">Contact Us</a>
                     </li>
                 </ul>
             </div>
@@ -74,20 +74,24 @@
     
     
     <div class="container">
-        <div class="col-sm-6 col-sm-offset-3" >
         <h2 class="text-center">Log in</h2>
-        
-            <form class="form-signin"method = "POST">
-                <label for="username" class="sr-only">Name</label>
-                <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
-                <label for="password" class="sr-only">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
-                
-                <button id="btnLogin" class="btn btn-md btn-primary btn-block" type="submit">Login</button>
-            </form>    
+        <hr>
+        <div class="col-sm-6 col-sm-offset-3 panel panel-default" >
+            <div class="panel-body">
             {% if error %}
-                <p class="error"><strong>Error:</strong> {{ error }}
+                <div class="alert alert-danger" role="alert">
+                    <p class="error"><strong>Error:</strong> {{ error }}
+                </div>
             {% endif %}
+                <form class="form-signin"method = "POST">
+                    <label for="username" class="sr-only">Name</label>
+                    <input type="name" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                    
+                    <button id="btnLogin" class="btn btn-md btn-primary btn-block" type="submit">Login</button>
+                </form>  
+            </div>
         </div>
     </div>
         <!-- /.row -->

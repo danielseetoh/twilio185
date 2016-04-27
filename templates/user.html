@@ -44,13 +44,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="/about">About</a>
+                        <a href="/about">About Us</a>
                     </li>
                     <li>
                         <a href="/services">Services</a>
                     </li>
                     <li>
-                        <a href="/contact">Contact</a>
+                        <a href="/contact">Contact Us</a>
                     </li>
                 </ul>
                 {% if session['username'] %}
@@ -126,11 +126,6 @@
 
             {% endfor %}
             
-            <!--<form class="form-inline" method = "POST" action = "/edit/{{session['username']}}">-->
-            <!--    <div class = "form-group">-->
-            <!--        <button id="btnChangeActive" class="btn btn-md btn-default" type="submit">Edit</button>-->
-            <!--    </div>-->
-            <!--</form>-->
             <br>
             <a href="/edit/{{session['username']}}">
                 <button id="btnEdit" class="btn btn-md btn-default" type="button">Edit</button>
@@ -153,7 +148,17 @@
                 <h3 class="panel-title">Validated</h3>
               </div>
               <div class="panel-body">
-                  {{validated}}
+                  {% if validated %}
+                      {% if not pending %}
+                          Currently Validated
+                      {% endif %}
+                  {% else %}
+                      {% if pending %}
+                          Pending Validation
+                      {% else %}  
+                          Documents Not Valid
+                      {% endif %}
+                  {% endif %}
               </div>
             </div>
             <div class="panel panel-default">

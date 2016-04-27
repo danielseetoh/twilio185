@@ -100,24 +100,30 @@
 
         <div class="container">
             <div class="page-header">
-                <h2 class="text-center">Dashboard</h2>
+                <h2 class="text-center">Admin Dashboard</h2>
             </div>
             <br>
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Total Number of Medical Personnel
+                        <h3 class="panel-title">Medical Personnel</h3>
                     </div>
                     <div class="panel-body">
-                        {{nummedics}}
+                        <b>Total Number: </b>{{numMedics}}
+                    </div>
+                    <div class="panel-body">
+                        <b>Total Active and Validated: </b>{{numActiveValidatedMedics}}
                     </div>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        Total Number of Requests
+                        <h3 class="panel-title">Requests</h3>
                     </div>
                     <div class="panel-body">
-                        {{numrequests}}
+                        <b>Total Number: </b>{{numRequests}}
+                    </div>
+                    <div class="panel-body">
+                        <b>Total Number Responded to: </b>{{numRespondedRequests}}
                     </div>
                 </div>
             </div>

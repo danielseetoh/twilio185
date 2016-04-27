@@ -24,9 +24,13 @@ cur = con.cursor()
 # gmaps = googlemaps.Client(key=config.GMAPS_KEY)
 ses = {}
 _username = 'admin'
-cur.execute("SELECT count(*) from medics")
+request_id = 88
+number = '+15107100732'
+cur.execute("SELECT lastrequest FROM medics WHERE phonenumber = '{}'".format(number))
+print 'success'
 result = cur.fetchall()[0][0]
-print int(result)
+print result
+# print int(result)
 # result = cur.fetchall()
 # for i in range(len(result)):
 #     # encode all images

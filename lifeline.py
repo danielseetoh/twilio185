@@ -54,24 +54,32 @@ def receivemessage():
     
     try:
         # get first letter y/n from the reply
-        answer = body[0]
+        # answer = body[0]
         # request id is the remaining characters
-        request_id = body[1:]
-        cur.execute("SELECT responded, phonenumber, name FROM requests WHERE id = '%s' " % (request_id))
-        responded, phonenumber, name = cur.fetchall()[0]
-        if answer == 'y':
-            # Will add a method to deconflict clashes in requests from the same area
+        # request_id = body[1:]
+        
+        # get yes/no
+        answer = body
+        # cur.execute("SELECT responded, phonenumber, name FROM requests WHERE id = '%s' " % (request_id))
+        # responded, phonenumber, name = cur.fetchall()[0]
+        if answer == 'yes':
+            cur.execute("SELECT lastrequest FROM medics WHERE phonenumber = '{}'".format(fromnum))
+            request_id = cur.fetchall()[0][0]
+            print request_id
+            cur.execute("SELECT responded, phonenumber, name FROM requests WHERE id = '%s' " % (request_id))
+            responded, phonenumber, name = cur.fetchall()[0]
             if responded == False:
+                
                 cur.execute("UPDATE requests SET responded = %s WHERE id = '%s'" % (True, request_id))
                 con.commit()
-                r.message("Thank you for replying. You are the first to accept and other medical personnel will be informed that someone is on the way should they choose to accept as well. A message will be sent to the requester to let him/her know you are on the way. Please contact the requestor (" + str(name) + ") at " + str(phonenumber))
+                r.message("Thank you for replying. A message will be sent to the requester to let him/her know you are on the way. Please contact the requester (" + str(name) + ") at " + str(phonenumber))
                 # create a response to the requestor
                 acknowledge_requestor(phonenumber)
             elif responded == True:
-                r.message("Thank you for replying. Another medical personnel is on the way to the scene already, but we appreciate your prompt response. Have a good day.")
+                r.message("Thank you for replying. Another medical personnel is on the way to the scene already. Have a good day.")
             else:
                 r.message("The request is not valid.")
-        elif answer == 'n':
+        elif answer == 'no':
             r.message("Thank you for your prompt response, have a good day.")
         else:
             r.message("Invalid response.")
@@ -85,7 +93,6 @@ def receivemessage():
 def sendmessage():
     
     if request.method == 'POST': 
-        # print request.form
         # get lat lng from user's phone
         _addresspoint = (eval(request.form['lat']), eval(request.form['long']))
         # get the current hour in 24hr format from the requestor (workaround for timezones)
@@ -102,6 +109,7 @@ def sendmessage():
         except:
             error = 'Invalid Phone Number.'
             return render_template('signup.html', error=error)
+        # parse phonenumber into standard format +15107101234
         _phonenumber = str(ph.format_number(phonenumObject, ph.PhoneNumberFormat.E164))
         # print _addresspoint, _phonenumber, _currenthour, _address, _name
         cur.execute("SELECT ST_SetSRID(ST_MakePoint({}, {}), 4326)".format(_addresspoint[1],_addresspoint[0]))
@@ -110,20 +118,16 @@ def sendmessage():
             cur.execute("INSERT INTO requests (phonenumber, addresspoint, responded, geog, name) VALUES ('{}', '{}', False, '{}', '{}') RETURNING id"\
         .format(_phonenumber,_addresspoint, _geog, _name))
             request_id = cur.fetchall()[0][0]
-            con.commit()
-            username = 'danielseetoh' # just to message only me
+            request_id = int(request_id)
             # gets all medics within the area that are active at this time.
             cur.execute("SELECT DISTINCT ON (medics.phonenumber) medics.phonenumber FROM medics,addresses WHERE medics.username = addresses.username AND medics.active = True AND ST_DWithin(addresses.geog, '{}', '{}') AND addresses.starttime<= '{}' AND addresses.endtime > '{}' AND medics.validated = True".format(_geog, SEARCH_RADIUS, _currenthour, _currenthour))
             medic_phone_numbers = cur.fetchall()
             print medic_phone_numbers
             for number in medic_phone_numbers:
-                client.messages.create(
-                body = "Request id: %s. There is an emergency at '%s', will you be able to respond in \
-                less than 8 minutes? If yes reply (y%s), if no reply (n%s)." % (request_id, _address, request_id, request_id),
-                to = number[0],
-                # can change in the future to check for available lines in the country it is from
-                from_ = "+14245438814",
-                )
+                number = number[0]
+                sendrequest(number, _address)
+                cur.execute("UPDATE medics SET lastrequest = %d WHERE phonenumber = '%s'"%(request_id, number))
+            con.commit()
         except:
             return('Could not create request')
         
@@ -158,16 +162,8 @@ def signup():
             _address1 = str(request.form['address1'])
             _starttime1 = int(request.form['starttime1'])
             _endtime1 = int(request.form['endtime1'])
-            # parse address into lat lng
             try:
-                geocode_result = gmaps.geocode(_address1)
-                if len(geocode_result) == 0:
-                    raise Exception
-                #get the lat,long of the address
-                _addresspoint1 = geocode_result[0]['geometry']['location'].values()[0], geocode_result[0]['geometry']['location'].values()[1]
-                #the _addresspoint1 tuple is flipped around because PostGIS uses long,lat instead of lat,long
-                cur.execute("SELECT ST_SetSRID(ST_MakePoint('{}', '{}'), 4326)".format(_addresspoint1[1],_addresspoint1[0]))
-                _geog1 = cur.fetchall()[0][0]
+                _addresspoint1, _geog1 = getaddresspointandgeog(_address1)
             except:
                 error = "First address is invalid.{}".format(_addresspoint1)
                 return render_template('signup.html', error=error)
@@ -184,12 +180,7 @@ def signup():
                 _endtime2 = int(request.form['endtime2'])
                 #parse address into lat long here
                 try:
-                    geocode_result = gmaps.geocode(_address2)
-                    if len(geocode_result) == 0:
-                        raise Exception
-                    _addresspoint2 = geocode_result[0]['geometry']['location'].values()[0], geocode_result[0]['geometry']['location'].values()[1] 
-                    cur.execute("SELECT ST_SetSRID(ST_MakePoint('{}', '{}'), 4326)".format(_addresspoint2[1],_addresspoint2[0]))
-                    _geog2 = cur.fetchall()[0][0]
+                    _addresspoint2, _geog2 = getaddresspointandgeog(_address2)
                 except:
                     error = "Second address is invalid."
                     return render_template('signup.html', error=error)
@@ -207,12 +198,7 @@ def signup():
                 _endtime3 = int(request.form['endtime3'])
                 #parse address into lat long here
                 try:
-                    geocode_result = gmaps.geocode(_address3)
-                    if len(geocode_result) == 0:
-                        raise Exception
-                    _addresspoint3 = geocode_result[0]['geometry']['location'].values()[0], geocode_result[0]['geometry']['location'].values()[1]
-                    cur.execute("SELECT ST_SetSRID(ST_MakePoint('{}', '{}'), 4326)".format(_addresspoint3[1],_addresspoint3[0]))
-                    _geog3 = cur.fetchall()[0][0]
+                    _addresspoint3, _geog3 = getaddresspointandgeog(_address3)
                 except:
                     error = "Third address is invalid."
                     return render_template('signup.html', error=error)
@@ -226,7 +212,6 @@ def signup():
         try:
             file = request.files['file']
             _filename = file.filename
-            print _filename
             _filedata = db.Binary(file.read())
         except:
             error = "There is an issue with your uploaded file.{}".format(request.form)
@@ -302,8 +287,11 @@ def admin():
             numMedics = int(cur.fetchall()[0][0])
             cur.execute("SELECT count(*) from requests")
             numRequests = int(cur.fetchall()[0][0])
-            
-            return render_template('admin.html', pendingusers = result, lengthpendingusers = len(result), nummedics = numMedics, numrequests = numRequests)
+            cur.execute("SELECT count(*) from medics where active = True and validated = True")
+            numActiveValidatedMedics = int(cur.fetchall()[0][0])
+            cur.execute("SELECT count(*) from requests where responded = True")
+            numRespondedRequests = int(cur.fetchall()[0][0])
+            return render_template('admin.html', pendingusers = result, lengthpendingusers = len(result), numMedics = numMedics, numRequests = numRequests, numActiveValidatedMedics = numActiveValidatedMedics, numRespondedRequests = numRespondedRequests)
     except:
         return redirect('/')
         
@@ -313,12 +301,9 @@ def user(username = None):
         if session['username'] == 'admin':
             return redirect('/admin')
         if session['username'] and session['username'] == username:
-            cur.execute("SELECT active, filename, filedata, validated FROM medics WHERE username = '%s'" % (session['username']))
+            cur.execute("SELECT active, filename, filedata, validated, pending FROM medics WHERE username = '%s'" % (session['username']))
             result = cur.fetchall()
-            active = result[0][0]
-            filename = result[0][1]
-            filedata = result[0][2]
-            validated = result[0][3]
+            active, filename, filedata, validated, pending = result[0]
             data = b64encode(filedata)
             session['active'] = active
             cur.execute("SELECT address, starttime, endtime FROM addresses where username = '%s' ORDER BY address" % (session['username']))
@@ -326,13 +311,9 @@ def user(username = None):
             session['addresses'] = {}
             for i in range(len(result)):
                 session['addresses'][i] = result[i]
-                # print type(i)
-                # print session['addresses'][i]
-            return render_template('user.html', username = username, active = session['active'], image = data, validated = validated)
+            return render_template('user.html', username = username, active = session['active'], image = data, validated = validated, pending = pending)
     except:
         return redirect('/')
-
-
 
 @app.route('/edit/<username>', methods = ['GET', 'POST'])
 def edit(username = None, error = None):
@@ -366,20 +347,11 @@ def edit(username = None, error = None):
                         _starttime = int(request.form['starttime'+str(i)])
                         _endtime = int(request.form['endtime'+str(i)])
                         try:
-                            geocode_result = gmaps.geocode(_address)
-                            if len(geocode_result) == 0:
-                                raise Exception
-                            #get the lat,long of the address
-                            _addresspoint = geocode_result[0]['geometry']['location'].values()[0], geocode_result[0]['geometry']['location'].values()[1]
-                            #the _addresspoint1 tuple is flipped around because PostGIS uses long,lat instead of lat,long
-                            cur.execute("SELECT ST_SetSRID(ST_MakePoint('{}', '{}'), 4326)".format(_addresspoint[1],_addresspoint[0]))
-                            _geog = cur.fetchall()[0][0]
+                            _addresspoint, _geog = getaddresspointandgeog(_address)
                             if _starttime >= _endtime:
                                 raise Exception
                         except:
-                            
                             error = "Address/timing {} is invalid.".format(i+1)
-                            # return redirect('edit/' + session['username'])
                             return render_template('edit.html', error = error)
                         else:
                             try:
@@ -405,14 +377,7 @@ def new(username = None):
                 _starttime = int(request.form['starttime'])
                 _endtime = int(request.form['endtime'])
                 try:
-                    geocode_result = gmaps.geocode(_address)
-                    if len(geocode_result) == 0:
-                        raise Exception
-                    #get the lat,long of the address
-                    _addresspoint = geocode_result[0]['geometry']['location'].values()[0], geocode_result[0]['geometry']['location'].values()[1]
-                    #the _addresspoint1 tuple is flipped around because PostGIS uses long,lat instead of lat,long
-                    cur.execute("SELECT ST_SetSRID(ST_MakePoint('{}', '{}'), 4326)".format(_addresspoint[1],_addresspoint[0]))
-                    _geog = cur.fetchall()[0][0]
+                    _addresspoint, _geog = getaddresspointandgeog(_address)
                     if _starttime >= _endtime:
                         raise Exception
                 except:
@@ -446,6 +411,25 @@ def acknowledge_requestor(phonenumber):
     to = phonenumber,
     from_ = "+14245438814",
     )   
+
+def getaddresspointandgeog(address):
+    geocode_result = gmaps.geocode(address)
+    if len(geocode_result) == 0:
+        raise Exception
+    #get the lat,long of the address
+    addresspoint = geocode_result[0]['geometry']['location'].values()[0], geocode_result[0]['geometry']['location'].values()[1]
+    #the _addresspoint1 tuple is flipped around because PostGIS uses long,lat instead of lat,long
+    cur.execute("SELECT ST_SetSRID(ST_MakePoint('{}', '{}'), 4326)".format(addresspoint[1],addresspoint[0]))
+    geog = cur.fetchall()[0][0]
+    return addresspoint, geog
+
+def sendrequest(number, address):
+    client.messages.create(
+    body = "There is an emergency at '%s', will you be able to respond in less than 8 minutes? (yes/no)" % (address),
+    to = number,
+    # can change in the future to check for available lines in the country it is from
+    from_ = "+14245438814",
+    )
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))
