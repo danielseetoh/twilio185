@@ -34,7 +34,7 @@ gmaps = googlemaps.Client(key=config.GMAPS_KEY)
 client = TwilioRestClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 #search radius for app
-SEARCH_RADIUS = 1000.0
+SEARCH_RADIUS = 800.0
 
 # connect to testdbdoc database
 try:
@@ -102,6 +102,11 @@ def sendmessage():
         # assuming _addresspoint is a tuple
         _address = gmaps.reverse_geocode(_addresspoint)[0]['formatted_address']
         try:
+            _issuetype = str(request.form['issuetype'])
+            print request.form 
+        except:
+            _issuetype = "General"
+        try:
             phonenumber = "+" + str(request.form['phonenumber'])
             phonenumObject = ph.parse(phonenumber, None)
             if not ph.is_valid_number(phonenumObject):
@@ -115,17 +120,17 @@ def sendmessage():
         cur.execute("SELECT ST_SetSRID(ST_MakePoint({}, {}), 4326)".format(_addresspoint[1],_addresspoint[0]))
         _geog = cur.fetchall()[0][0]
         try:
-            cur.execute("INSERT INTO requests (phonenumber, addresspoint, responded, geog, name) VALUES ('{}', '{}', False, '{}', '{}') RETURNING id"\
-        .format(_phonenumber,_addresspoint, _geog, _name))
+            
+            cur.execute("INSERT INTO requests (phonenumber, addresspoint, responded, geog, name, issuetype) VALUES ('{}', '{}', False, '{}', '{}', '{}') RETURNING id".format(_phonenumber,_addresspoint, _geog, _name, _issuetype))
             request_id = cur.fetchall()[0][0]
             request_id = int(request_id)
             # gets all medics within the area that are active at this time.
-            cur.execute("SELECT DISTINCT ON (medics.phonenumber) medics.phonenumber FROM medics,addresses WHERE medics.username = addresses.username AND medics.active = True AND ST_DWithin(addresses.geog, '{}', '{}') AND addresses.starttime<= '{}' AND addresses.endtime > '{}' AND medics.validated = True".format(_geog, SEARCH_RADIUS, _currenthour, _currenthour))
+            cur.execute("SELECT DISTINCT ON (medics.phonenumber) medics.phonenumber FROM medics INNER JOIN addresses ON (medics.username = addresses.username) WHERE medics.active = True AND ST_DWithin(addresses.geog, '{}', '{}') AND addresses.starttime <= '{}' AND addresses.endtime > '{}' AND medics.validated = True".format(_geog, SEARCH_RADIUS, _currenthour, _currenthour))
             medic_phone_numbers = cur.fetchall()
             print medic_phone_numbers
             for number in medic_phone_numbers:
                 number = number[0]
-                sendrequest(number, _address)
+                sendrequest(number, _address, _issuetype)
                 cur.execute("UPDATE medics SET lastrequest = %d WHERE phonenumber = '%s'"%(request_id, number))
             con.commit()
         except:
@@ -423,9 +428,9 @@ def getaddresspointandgeog(address):
     geog = cur.fetchall()[0][0]
     return addresspoint, geog
 
-def sendrequest(number, address):
+def sendrequest(number, address, issuetype):
     client.messages.create(
-    body = "There is an emergency at '%s', will you be able to respond in less than 8 minutes? (yes/no)" % (address),
+    body = "There is an emergency at '%s', listed issue is: %s. Will you be able to respond in less than 8 minutes? (yes/no)" % (address, issuetype),
     to = number,
     # can change in the future to check for available lines in the country it is from
     from_ = "+14245438814",

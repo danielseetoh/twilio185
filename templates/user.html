@@ -105,7 +105,11 @@
                 <h3 class="panel-title">Active</h3>
               </div>
               <div class="panel-body">
-                {{active}}
+                {% if active %}
+                    Currently Active
+                {% else %}
+                    Currently Not Active
+                {% endif %}
               </div>
             </div>
             {% for i in session['addresses'] %}
